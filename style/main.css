@@ -42,7 +42,7 @@ a:hover > i {
 /* Add underline for all h1 */
 h1.with-underline {
   position: relative;
-  margin-bottom: 3rem;
+  margin: 1.5rem 0;
 }
 
 h1.with-underline::after {
@@ -72,4 +72,12 @@ ul {
 .nav .nav__logo {
   height: 40px;
   width: auto;
+}
+
+.nav .nav__link{
+  text-decoration: none;
+}
+
+.nav .nav__link > i{
+  margin-right: 5px;
 }
