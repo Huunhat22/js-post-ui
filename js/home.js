@@ -1,6 +1,6 @@
 import axiosClient from './api/axiosClient'
 import postApi from './api/postAPI'
-import { setTextContent, setMaxLengthTitle } from './utils'
+import { setTextContent, setMaxLengthTitle, getUlPagination } from './utils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 
@@ -57,6 +57,9 @@ function renderPostList(postList) {
   const ulElement = document.getElementById('postList')
   if (!ulElement) return
 
+  // bài 245 : clear current list
+  ulElement.textContent = ''
+
   // duyệt data và tạo thẻ liElement
   postList.forEach((post) => {
     const liElement = createLiElement(post)
@@ -66,7 +69,7 @@ function renderPostList(postList) {
 
 // create function render pagination
 function renderPagination(pagination) {
-  const ulPagination = document.getElementById('Pagination')
+  const ulPagination = getUlPagination()
   if (!pagination || !ulPagination) return
 
   // calc totalPages
@@ -90,27 +93,56 @@ function renderPagination(pagination) {
 function handlePreElement(event) {
   event.preventDefault()
   console.log('previous Click')
+
+  const ulElement = getUlPagination()
+  if (!ulElement) return
+
+  const page = Number.parseInt(ulElement.dataset.page) || 1
+
+  if (page <= 1) return
+  handleFilterChange('_page', page - 1)
 }
 
 // create function handleNextElement click
 function handleNextElement(event) {
   event.preventDefault()
   console.log('next Click')
+
+  const ulElement = getUlPagination()
+  if (!ulElement) return
+
+  const page = Number.parseInt(ulElement.dataset.page) || 1
+  const totalPages = ulElement.dataset.totalPages
+
+  if (page >= totalPages) return
+  handleFilterChange('_page', page + 1)
 }
 
 // create function handleFilterChange
-function handleFilterChange(filterName, filterValue) {
-  // update query params into URL
-  const url = new URL(window.location)
-  url.searchParams.set(filterName, filterValue)
-  history.pushState({}, '', url)
+async function handleFilterChange(filterName, filterValue) {
+  // vì khi fetch api thì sẽ có khả năng gây lỗi, nên sẽ sử dụng try catch
+  try {
+    // update query params into URL
+    const url = new URL(window.location)
+    url.searchParams.set(filterName, filterValue)
+    history.pushState({}, '', url)
 
-  // fetch Api
-  // re-rendener Post list
+    // fetch Api
+    // re-rendener Post list
+    const { data, pagination } = await postApi.getAll(url.searchParams)
+
+    // function renderPostList
+    renderPostList(data)
+
+    // function render pagination
+    renderPagination(pagination)
+  } catch (error) {
+    console.log('faild to fetch post list', error)
+  }
 }
 
 function initPagination() {
-  const ulPagination = document.getElementById('Pagination')
+  const ulPagination = getUlPagination()
   if (!ulPagination) return
 
   const preElement = ulPagination.firstElementChild?.firstElementChild
@@ -159,7 +191,7 @@ function initURL() {
     // function render pagination
     renderPagination(pagination)
 
-    // console.log(data, pagination)
+    console.log('pagination', pagination)
   } catch (error) {
     console.log('getAll failed', error)
   }
