@@ -3,6 +3,7 @@ import postApi from './api/postAPI'
 import { setTextContent, setMaxLengthTitle, getUlPagination } from './utils'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import debounce from 'lodash.debounce'
 
 // to use fromNow function
 dayjs.extend(relativeTime)
@@ -125,6 +126,10 @@ async function handleFilterChange(filterName, filterValue) {
     // update query params into URL
     const url = new URL(window.location)
     url.searchParams.set(filterName, filterValue)
+
+    // bài 246: reset page khi có filter input
+    if (filterName === 'title_like') url.searchParams.set('_page', 1)
+
     history.pushState({}, '', url)
 
     // fetch Api
@@ -169,9 +174,28 @@ function initURL() {
   history.pushState({}, '', url)
 }
 
+// create function initSearch
+function initSearch() {
+  const searchInput = document.getElementById('searchInput')
+  if (!searchInput) return
+
+  // set default values from query params
+  const queryParmas = new URLSearchParams(window.location.search)
+  if (queryParmas.get('title_like')) searchInput.value = queryParmas.get('title_like')
+
+  // title_like
+  const deboundceSearch = debounce((event) => handleFilterChange('title_like', event.target.value), 500)
+
+  searchInput.addEventListener('input', deboundceSearch)
+}
+
 ;(async () => {
   try {
+    // khởi tạo giá trị ban đầu cho phần phân trang
     initPagination()
+    initSearch()
+
+    // khởi tạo giá trị ban dầu cho url
     initURL()
     // const queryParmas = {
     //   _page: 1,
