@@ -36,6 +36,14 @@ export function createLiElement(post) {
   setTextContent(liElement, '[data-id="timeSpan"]', `- ${dayjs(post.updatedAt).fromNow()}`)
   // console.log('fromNow', dayjs(post.updatedAt).fromNow())
 
+  // xử lý sự kiện : khi click vào item Post thì sẽ chuyển sang trang post detail
+  const postItem = liElement.firstElementChild
+  if (postItem) {
+    postItem.addEventListener('click', () => {
+      window.location.assign(`/post-detail.html?id=${post.id}`)
+    })
+  }
+
   return liElement
 }
 

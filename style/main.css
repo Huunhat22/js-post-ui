@@ -81,3 +81,9 @@ ul {
 .nav .nav__link > i{
   margin-right: 5px;
 }
+
+.nav-item > i {
+  height: 16px;
+  width: 16px;
+  color: var(--primary-color)
+}
