@@ -12,3 +12,20 @@ export function setMaxLengthTitle(maxLength, text) {
 
   return `${text.slice(0, maxLength - 1)}…`
 }
+
+// function to set value for input form
+export function setValueInputForm(parent, selector, value) {
+  if (!parent) return
+
+  const element = parent.querySelector(selector)
+  if (element) element.value = value
+}
+
+// function to set value for input form
+export function setBackgroundImage(parent, selector, imageUrl) {
+  if (!parent) return
+
+  const element = parent.querySelector(selector)
+
+  if (element) element.style.backgroundImage = `url("${imageUrl}")`
+}

@@ -39,8 +39,23 @@ export function createLiElement(post) {
   // xử lý sự kiện : khi click vào item Post thì sẽ chuyển sang trang post detail
   const postItem = liElement.firstElementChild
   if (postItem) {
-    postItem.addEventListener('click', () => {
-      window.location.assign(`/post-detail.html?id=${post.id}`)
+    postItem.addEventListener('click', (event) => {
+      // cách 2: thẻ parent sẽ kiểm tra: thẻ chứa sự kiện đang được gọi có phải là con hay không
+      const menu = liElement.querySelector('[data-id="menu"]')
+      if (menu && menu.contains(event.target)) return
+
+      // window.location.assign(`/post-detail.html?id=${post.id}`)
+    })
+  }
+
+  // xử lý sự kiện : khi click vào icon trên post thì sẽ chuyển sang trang add-edit-post
+  const editElement = liElement.querySelector('[data-id="edit"]')
+  if (editElement) {
+    editElement.addEventListener('click', (e) => {
+      // cách 1 : sử dụng stopPropagation
+      // e.stopPropagation()
+      console.log('edit event chil click')
+      window.location.assign(`/add-edit-post.html?id=${post.id}`)
     })
   }
 
