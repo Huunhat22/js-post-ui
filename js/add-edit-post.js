@@ -5,7 +5,7 @@ import { initPostForm } from './utils'
     const searchParams = new URLSearchParams(window.location.search)
     const postId = searchParams.get('id')
 
-    const defaultValue = Boolean(postApi)
+    const defaultValue = Boolean(postId)
       ? await postApi.getById(postId)
       : {
           author: '',
