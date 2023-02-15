@@ -1,5 +1,5 @@
 import postApi from './api/postAPI'
-import { initPostForm } from './utils'
+import { initPostForm, toask } from './utils'
 
 // create function handleSubmitForm
 // gọi api thì phải async , await. try catch
@@ -14,10 +14,14 @@ async function handleSubmitForm(formValues) {
     savePost = formValues.id ? await postApi.update(formValues) : await postApi.add(formValues)
 
     // hiển thị thông báo thành công add hay edit
+    toask.success('Success save to post!')
     // redirect tới trang detail post
-    window.location.assign(`/post-detail.html?id=${savePost.id}`)
+    setTimeout(() => {
+      window.location.assign(`/post-detail.html?id=${savePost.id}`)
+    }, 3000)
   } catch (error) {
-    console.log('failed to save post', error)
+    // console.log('failed to save post', error)
+    toask.error(`Failed: ${error.message}`)
   }
 }
 
