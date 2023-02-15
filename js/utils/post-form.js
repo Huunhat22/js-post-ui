@@ -65,8 +65,8 @@ async function validatePostForm(form, formValues) {
     const schema = getPostSchema()
     await schema.validate(formValues, { abortEarly: false })
   } catch (error) {
-    console.log(error.name)
-    console.log(error.inner)
+    // console.log(error.name)
+    // console.log(error.inner)
 
     // cờ đánh dấu, để lấy ra mã lỗi đầu tiên
     const errorLog = {}
@@ -79,7 +79,7 @@ async function validatePostForm(form, formValues) {
         // setFieldError và đánh dấu lỗi
         setFieldErrors(form, name, validationError.message)
         errorLog[name] = true
-        console.log(errorLog)
+        // console.log(errorLog)
       }
     }
   }
@@ -97,12 +97,20 @@ export function initPostForm({ formId, defaultValue, onSubmit }) {
   // set form value
   setFormValues(form, defaultValue)
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     const formValues = getFormValues(form)
+    // trường hợp edit post thì sẽ lấy id từ defaultValue gán vào formValues
+    formValues.id = defaultValue.id
 
     // hàm validatePostForm này trả về giá trị true hoặc false, Nếu là false thì đang có lỗi, khi submit thì sẽ ko làm gì.
-    if (!validatePostForm(form, formValues)) return
+    // lý do hàm callback lại sử dụng async await
+    // hàm validatePostForm trả về promise, mà promise là truethy. Mà phủ định của truethy là false. nên nó luôn return (không làm gì)
+    // if (!validatePostForm(form, formValues)) return
+    const isValid = await validatePostForm(form, formValues)
+    if (!isValid) return
+
+    onSubmit?.(formValues)
   })
 }

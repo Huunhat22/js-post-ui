@@ -44,7 +44,7 @@ export function createLiElement(post) {
       const menu = liElement.querySelector('[data-id="menu"]')
       if (menu && menu.contains(event.target)) return
 
-      // window.location.assign(`/post-detail.html?id=${post.id}`)
+      window.location.assign(`/post-detail.html?id=${post.id}`)
     })
   }
 
@@ -54,7 +54,7 @@ export function createLiElement(post) {
     editElement.addEventListener('click', (e) => {
       // cách 1 : sử dụng stopPropagation
       // e.stopPropagation()
-      console.log('edit event chil click')
+      // console.log('edit event chil click')
       window.location.assign(`/add-edit-post.html?id=${post.id}`)
     })
   }
