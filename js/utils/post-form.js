@@ -1,4 +1,4 @@
-import { setBackgroundImage, setTextContent, setValueInputForm } from './common'
+import { randomNumber, setBackgroundImage, setTextContent, setValueInputForm } from './common'
 import * as yup from 'yup'
 // create function setFormValue
 function setFormValues(form, defaultValue) {
@@ -43,6 +43,7 @@ function getPostSchema() {
         (value) => value.split(' ').filter((x) => !!x && x.length >= 3).length >= 2
       ),
     description: yup.string(),
+    // imageUrl: yup.required('please random image background'),
   })
 }
 
@@ -90,6 +91,57 @@ async function validatePostForm(form, formValues) {
   return isValid
 }
 
+// create function showSubmitForm
+function showSubmitForm(form) {
+  const elementSave = form.querySelector('[name="save"]')
+  if (!elementSave) return
+
+  elementSave.disabled = true
+  elementSave.textContent = 'Saving...'
+}
+
+// create function hideSubmitForm
+function hideSubmitForm(form) {
+  const elementSave = form.querySelector('[name="save"]')
+  if (!elementSave) return
+
+  elementSave.disabled = false
+  elementSave.textContent = 'Save'
+}
+
+// create function randomBackground
+function initRandomImage(form) {
+  const buttonRandom = document.getElementById('postChangeImage')
+  if (!buttonRandom) return
+
+  buttonRandom.addEventListener('click', () => {
+    //tạo imageURL
+    const imageUrl = `https://picsum.photos/id/${randomNumber(1000)}/1368/400`
+
+    //set background bằng imageURL, và cho inputHiden
+    setValueInputForm(form, '[name="imageUrl"]', imageUrl)
+
+    // set background image
+    setBackgroundImage(document, '#postHeroImage', imageUrl)
+  })
+}
+
+// create function renderImageSourceControl
+function renderImageSourceControl(form, selectedValue) {
+  const controlList = form.querySelectorAll('[data-id="imageSource"]')
+  controlList.forEach((control) => {
+    control.hidden = control.dataset.imageSource !== selectedValue
+  })
+}
+
+// create function initRadioImageSource, hàm này có chức năng ẩn hiện các control tương ứng của khi chọn radio
+function initRadioImageSource(form) {
+  const radioList = form.querySelectorAll('[name="imageSource"]')
+  radioList.forEach((radio) => {
+    radio.addEventListener('change', (event) => renderImageSourceControl(form, event.target.value))
+  })
+}
+
 export function initPostForm({ formId, defaultValue, onSubmit }) {
   const form = document.getElementById(formId)
   if (!form) return
@@ -97,10 +149,22 @@ export function initPostForm({ formId, defaultValue, onSubmit }) {
   // set form value
   setFormValues(form, defaultValue)
 
+  let isSubmiting = false
+
+  // init events
+  initRandomImage(form)
+  initRadioImageSource(form)
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
+    // phần kiểm tra này dùng để ngăn chặn việc click nhiều lần
+    if (isSubmiting) return
+
+    showSubmitForm(form)
+    isSubmiting = true
 
     const formValues = getFormValues(form)
+
     // trường hợp edit post thì sẽ lấy id từ defaultValue gán vào formValues
     formValues.id = defaultValue.id
 
@@ -109,8 +173,10 @@ export function initPostForm({ formId, defaultValue, onSubmit }) {
     // hàm validatePostForm trả về promise, mà promise là truethy. Mà phủ định của truethy là false. nên nó luôn return (không làm gì)
     // if (!validatePostForm(form, formValues)) return
     const isValid = await validatePostForm(form, formValues)
-    if (!isValid) return
+    if (isValid) await onSubmit?.(formValues)
 
-    onSubmit?.(formValues)
+    // lý do phải thêm await vào là vì hàm callBack của onSubmit là hàm async và phải để cho nó chạy xong thì mới chạy tiếp hàm hideSubmitForm
+    hideSubmitForm(form)
+    isSubmiting = false
   })
 }

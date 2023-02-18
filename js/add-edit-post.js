@@ -33,10 +33,10 @@ async function handleSubmitForm(formValues) {
     const defaultValue = Boolean(postId)
       ? await postApi.getById(postId)
       : {
+          title: '',
           author: '',
           description: '',
           imageUrl: '',
-          title: '',
         }
 
     initPostForm({
