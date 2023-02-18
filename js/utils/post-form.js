@@ -142,6 +142,18 @@ function initRadioImageSource(form) {
   })
 }
 
+// create function initUploadImage , hàm này có chức năng lấy hình ảnh từ input và set vào background
+function initUploadImage(form) {
+  const uploadImage = form.querySelector('[name="image"]')
+  uploadImage.addEventListener('change', (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      const imageUrl = URL.createObjectURL(file)
+      setBackgroundImage(document, '#postHeroImage', imageUrl)
+    }
+  })
+}
+
 export function initPostForm({ formId, defaultValue, onSubmit }) {
   const form = document.getElementById(formId)
   if (!form) return
@@ -154,6 +166,7 @@ export function initPostForm({ formId, defaultValue, onSubmit }) {
   // init events
   initRandomImage(form)
   initRadioImageSource(form)
+  initUploadImage(form)
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
