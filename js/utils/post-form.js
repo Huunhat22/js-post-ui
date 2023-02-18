@@ -43,7 +43,7 @@ function getPostSchema() {
         (value) => value.split(' ').filter((x) => !!x && x.length >= 3).length >= 2
       ),
     description: yup.string(),
-    // imageUrl: yup.required('please random image background'),
+    imageUrl: yup.string().required('please random a background image'),
   })
 }
 
@@ -61,7 +61,7 @@ function setFieldErrors(form, name, error) {
 async function validatePostForm(form, formValues) {
   try {
     // reset privious errors
-    ;['title', 'author'].forEach((name) => setFieldErrors(form, name, ''))
+    ;['title', 'author', 'imageUrl'].forEach((name) => setFieldErrors(form, name, ''))
 
     const schema = getPostSchema()
     await schema.validate(formValues, { abortEarly: false })

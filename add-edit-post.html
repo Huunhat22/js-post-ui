@@ -141,13 +141,13 @@
                   <a href="https://picsum.photos">Picsum service</a> to get a
                   random image.
                 </small>
-                <input type="text" class="d-none" name="imageUrl" required>
                 <div>
                   <button type="button" id="postChangeImage" class="btn btn-dark">
                     Change post image
                   </button>
                 </div>
-                <div class="invalid-feedback"></div>
+                <input type="text" class="d-none form-control" name="imageUrl" required>
+                <div class="invalid-feedback">please enter valid image</div>
               </div>
 
               <div class="input-group mb-3" data-id="imageSource" data-image-source="upload" hidden>
