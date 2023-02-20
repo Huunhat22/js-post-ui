@@ -1,5 +1,12 @@
 import { randomNumber, setBackgroundImage, setTextContent, setValueInputForm } from './common'
 import * as yup from 'yup'
+
+// create imageSource
+// const ImageSource = {
+//   PICSUM: 'picsum',
+//   UPLOAD: 'upload',
+// }
+
 // create function setFormValue
 function setFormValues(form, defaultValue) {
   // set value for input element
@@ -43,7 +50,22 @@ function getPostSchema() {
         (value) => value.split(' ').filter((x) => !!x && x.length >= 3).length >= 2
       ),
     description: yup.string(),
-    imageUrl: yup.string().required('please random a background image'),
+    imageUrl: yup.string().required('please random a background image').url('please enter a valid Url'),
+
+    // imageSource: yup
+    //   .string()
+    //   .required('please select an image source')
+    //   .oneOf([ImageSource.PICSUM, ImageSource.UPLOAD], 'Invalid image source'),
+
+    // imageUrl: yup.string().when('imageSource', {
+    //   is: ImageSource.PICSUM,
+    //   then: yup.string().required('please random a background image').url('please enter a valid Url'),
+    // }),
+
+    // image: yup.mixed().when('imageSource', {
+    //   is: ImageSource.UPLOAD,
+    //   then: yup.mixed().test('required', 'Please select an image to upload', (value) => Boolean(value?.name)),
+    // }),
   })
 }
 
@@ -154,6 +176,39 @@ function initUploadImage(form) {
   })
 }
 
+// create function validationFormField
+async function validationFormField(form, formValues, name) {
+  try {
+    // xóa thông báo lối trước đó
+    setFieldErrors(form, name, '')
+    const schema = getPostSchema()
+    // sử dụng validateAt : sử dụng cho từng field
+    await schema.validateAt(name, formValues)
+  } catch (error) {
+    setFieldErrors(form, name, error.message)
+  }
+
+  // show validation
+  const field = form.querySelector(`[name="${name}"]`)
+  // nếu tìm thấy field và field này không hợp lệ thì
+  if (field && !field.checkValidity()) {
+    field.parentElement.classList.add('was-validated')
+  }
+}
+
+// create function initValidationOnchange
+function initValidationOnchange(form) {
+  ;['title', 'author'].forEach((name) => {
+    const field = form.querySelector(`[name=${name}]`)
+    if (field) {
+      field.addEventListener('input', (event) => {
+        const newValue = event.target.value
+        validationFormField(form, { [name]: newValue }, name)
+      })
+    }
+  })
+}
+
 export function initPostForm({ formId, defaultValue, onSubmit }) {
   const form = document.getElementById(formId)
   if (!form) return
@@ -165,8 +220,9 @@ export function initPostForm({ formId, defaultValue, onSubmit }) {
 
   // init events
   initRandomImage(form)
-  initRadioImageSource(form)
-  initUploadImage(form)
+  // initRadioImageSource(form)
+  // initUploadImage(form)
+  initValidationOnchange(form)
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()

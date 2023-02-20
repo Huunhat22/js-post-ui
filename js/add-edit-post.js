@@ -5,6 +5,7 @@ import { initPostForm, toask } from './utils'
 // gọi api thì phải async , await. try catch
 async function handleSubmitForm(formValues) {
   console.log('submit', formValues)
+  // return
   // kiểm tra xem đó là add hay edit
   // cách 1 : dựa vào search params trên url
   // cách 2 : dựa vào formValues.id, nếu có id thì là edit, không có là add // thực hiện cách 2

@@ -60,7 +60,7 @@ async function handleFilterChange(filterName, filterValue) {
     // khởi tạo giá trị ban dầu cho url
     // initURL()
 
-    // const queryParmas = {
+    // const queryParams1 = {
     //   _page: 1,
     //   _limit: 6,
     // }
@@ -71,7 +71,7 @@ async function handleFilterChange(filterName, filterValue) {
     // set default query params when not exit params
 
     const { data, pagination } = await postApi.getAll(queryParams)
-
+    // console.log(data)
     // function renderPostList
     renderPostList('postList', data)
 
