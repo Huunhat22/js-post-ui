@@ -1,5 +1,5 @@
 import postApi from './api/postAPI'
-import { initPagination, initSearch, renderPostList, renderPagination } from './utils'
+import { initPagination, initSearch, renderPostList, renderPagination, toask } from './utils'
 
 // create function handleFilterChange
 async function handleFilterChange(filterName, filterValue) {
@@ -7,7 +7,10 @@ async function handleFilterChange(filterName, filterValue) {
   try {
     // update query params into URL
     const url = new URL(window.location)
-    url.searchParams.set(filterName, filterValue)
+    // url.searchParams.set(filterName, filterValue)
+
+    // bài cuối : nếu có filterName được truyền thì mình mới set giá trị cho URL
+    if (filterName) url.searchParams.set(filterName, filterValue)
 
     // bài 246: reset page khi có filter input
     if (filterName === 'title_like') url.searchParams.set('_page', 1)
@@ -28,6 +31,27 @@ async function handleFilterChange(filterName, filterValue) {
   }
 }
 
+function registerPostDeleteEvent() {
+  document.addEventListener('post-delete', async (event) => {
+    // call api to api remove
+    // fetch api to reload
+    try {
+      // sử dụng confirm
+      const post = event.detail
+      const message = `Are you sure to remove "${post.title}"?`
+      if (window.confirm(message)) {
+        await postApi.remove(post.id)
+        await handleFilterChange()
+
+        toask.success('Remove post successfully!')
+      }
+    } catch (error) {
+      console.log('faild to remove this post', error)
+      toask.error(error.message)
+    }
+  })
+}
+
 ;(async () => {
   try {
     // create init query params
@@ -39,6 +63,9 @@ async function handleFilterChange(filterName, filterValue) {
 
     history.pushState({}, '', url)
     const queryParams = url.searchParams
+
+    // create function registerPostDeleteEvent
+    registerPostDeleteEvent()
 
     // khởi tạo giá trị ban đầu cho phần phân trang
     initPagination({

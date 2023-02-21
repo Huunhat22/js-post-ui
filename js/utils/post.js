@@ -59,6 +59,20 @@ export function createLiElement(post) {
     })
   }
 
+  // xử lý sự kiện : khi click vào icon delete trên post thì sẽ xóa post đó
+  const deleteButton = liElement.querySelector('[data-id="remove"]')
+  if (deleteButton) {
+    deleteButton.addEventListener('click', (e) => {
+      // tạo custom event : khi click thì nó sẽ đưa sự kiện này lên thằng cha để xử lý
+      // dispatch custom event vừa tạo
+      const customEvent = new CustomEvent('post-delete', {
+        bubbles: true,
+        detail: post,
+      })
+      deleteButton.dispatchEvent(customEvent)
+    })
+  }
+
   return liElement
 }
 
